@@ -1,25 +1,29 @@
 package exp;
 
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.spi.ContainerLifecycle;
 
 public class MyApplication {
+
+	private static ContainerLifecycle lifecycle = null;
 
 	@Inject
 	public int myValue;
 	
 	public static void main(String [] args) {
-		//MyApplication comp = (MyApplication) CdiContainer.get(MyApplication.class);
-		
-		
-		Weld weld = new Weld();
-		WeldContainer container = weld.initialize();
-		MyApplication myApp = container.select(MyApplication.class).get();
-		
+		lifecycle = WebBeansContext.currentInstance().getService(ContainerLifecycle.class);
+		lifecycle.startApplication(null);
+
+		final BeanManager beanManager = lifecycle.getBeanManager();
+		final Bean<?> bean = beanManager.getBeans(MyApplication.class).iterator().next();
+
+		final MyApplication myApp = (MyApplication) lifecycle.getBeanManager().getReference(bean, MyApplication.class, beanManager.createCreationalContext(bean));
 		System.out.println("MyValue = "+myApp.myValue);
-		
-		weld.shutdown();
+
+		lifecycle.stopApplication(null);
 	}
 }
