@@ -21,7 +21,7 @@ public class MyApplication {
 		final BeanManager beanManager = lifecycle.getBeanManager();
 		final Bean<?> bean = beanManager.getBeans(MyApplication.class).iterator().next();
 
-		final MyApplication myApp = (MyApplication) lifecycle.getBeanManager().getReference(bean, MyApplication.class, beanManager.createCreationalContext(bean));
+		final MyApplication myApp = (MyApplication) beanManager.getReference(bean, MyApplication.class, beanManager.createCreationalContext(bean));
 		System.out.println("MyValue = "+myApp.myValue);
 
 		lifecycle.stopApplication(null);
